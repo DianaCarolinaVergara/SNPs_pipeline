@@ -37,7 +37,10 @@ With this pipeline you would be able to:
 
 > Suitable for RAxML
 
-![](data:image/webp;base64,UklGRgYEAABXRUJQVlA4IPoDAADQGgCdASrIAHgAPm02mUikIyKhJFW4SIANiWlu4W8OAGv6B4QAH8A1EPwD7K5Pf7v+WHqh3r7Vv+O71XtmOL/0X/WeAhqR3of+W9O/6f4A3gHPTf7H+C/Ir2p/PX/a9wv9Z/+N2KvRm/WsTAaZ8NLK7oaZ8NLK7oaAb7vfUV3FTthGADzrR8DsbumAwuosFwbVWLOmM/0Bbi909oeLtpQ9fLO9HBo0Q3IQ/JycVs/ggfZLL+8Y+ZC4Wi1DkD65AyIc4FGpWZKNLGKY14AeiWV3Q0z4aWV3Q0z4aWV3Qz0AAP7z2QA5Ab/TfB+efZ4U+mrRO2cerjUVFMUxStDfVDF4Q6wZ0yPEuJF7LljITL0XxH93s2/JZ+vzNDoZtK7/7JAFL9gJm10YI9pnkmITkYGj1XYArOuuJhkqL7/LxK1kQTw4SnwRd4fEW8q/5bob9Sl+E9A/ofY8uo+QFEpTHmGC34mhSnrzoBPvYiBp72pxFnxwGf1dDuhPUL69Ym3HjgGDrNXbCfgfeKPH+VotjGGovUqqYvhlo/ec/xRXa+kFjncePoynC3b6stP/A4Kw9/9jIjsYZHeEf5QkfcLeBQvDmM/n1Ba6Mpl2/BjzfXALzgP2hBAH4PRiL/GE+sW8YNU6CS02OmoL/29f7quJjmnFqcr8GL56F3RfQVXVGYKg3quRjSvY8VqIIqwz3QVOgzSMdoDWMPfMTI4M7NcDWgfnGtvmNDu/cDJ+i1qFy9ZAp6bA5C9WshpgzBXPyRSwERHiBsNB42ZaRn9hXKv3rQ91omA3gFsr/qRU3M/pafg2Jhc2r8mKu62/ptZmSti07X9FqVM99+6qn2Y+r79MNPmxwbiS/36KxgWMiF7UeIsR983OrxWCo7IEQ6EpPHxoLGVjP/zEF2LvP9EMsQ6ShYCppQT47/93Y2NnQjSw/jalJbCjVyH/3Yndv1LrgegudH+L53zM9KOvH32F/JVJe7jW4zqOZpslyCrPWa4ngRiQv43LcmoKhTpjddO7l6i7B9+n72djakqtjo5wDoG+F73JPjpRZPpCezb64lTdMqwrUbHSGqZ3AL9dFl+t1/06/1yuDpORPimxvIZS5yEH55f+FGCuPdJQbNK/8BN+u26/rg4Nwxag3EGo+9gwZ7utOdoPOPzD9OrQ9jb3Rb9TyLrA0lzAu3GTnXcBTIiAHxM7DnSQYBlGWZb0MkbY1pwMENzx8ntTd551MmmGJfm04V9MMCJnZSi9T5W9pfTznvAGqySjVQ8DLn6reT3zH1QxtwhK68Z6Hv7l3Ec6xmmnpIqzanbAFN778GaXo6dEHU3ypExIcqjZfYTPhmeIQ2a7OcZnFEG/LAAAAAAA)
+![](http://www.phylo.org/img/logo_cipres.gif)
+
+![](https://s3.amazonaws.com/user-media.venngage.com/434503-b8f72eedfbceddd1c2371f8f115ce244.png)
+
 __________________________________________________________
 
 
@@ -59,7 +62,6 @@ __________________________________________________________
 
 
 
-![](https://s3.amazonaws.com/user-media.venngage.com/434503-b8f72eedfbceddd1c2371f8f115ce244.png)
 _______________________________________________
 
 .
