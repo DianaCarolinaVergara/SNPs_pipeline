@@ -5,6 +5,7 @@
 We received a vcf file where SNPsaurus converted genomic DNA into nextRAD genotyping-by-sequencing libraries (SNPsaurus, LLC).
 The nextRAD libraries were sequenced on a HiSeq 4000 on two lanes of 150bp reads.
 
+![](https://www.rbcbioscienceusa.com/wp-content/uploads/2019/03/SNP-961x480.png)
 
 With this pipeline you would be able to: 
 
@@ -59,7 +60,6 @@ __________________________________________________________
 
 ![](https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Dna-SNP.svg/450px-Dna-SNP.svg.png)
 
-![](https://www.rbcbioscienceusa.com/wp-content/uploads/2019/03/SNP-961x480.png)
 
 ![](https://s3.amazonaws.com/user-media.venngage.com/434503-b8f72eedfbceddd1c2371f8f115ce244.png)
 _______________________________________________
