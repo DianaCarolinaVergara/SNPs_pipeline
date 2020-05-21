@@ -58,11 +58,16 @@ __________________________________________________________
 * https://www.onworks.net/programs/vcftools-online?amp=0
 
 
-![](https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Dna-SNP.svg/450px-Dna-SNP.svg.png)
-
 
 ![](https://s3.amazonaws.com/user-media.venngage.com/434503-b8f72eedfbceddd1c2371f8f115ce244.png)
 _______________________________________________
+
+.
+
+.
+
+.
+
 
 #### Future pipeline: 
 
