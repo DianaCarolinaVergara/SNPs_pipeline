@@ -45,6 +45,13 @@ Or you can use another tool from CIPRESS Phylogenetic Collection (BEAST2, MRBAYE
 
 ![](https://cyverseuk.org/wp-content/uploads/2016/11/beast2_banner.png) ![](https://cyverseuk.org/wp-content/uploads/2016/11/mrbayes_banner.png)
 
+Need:
+
+- [X] Desktop RStudio or R in a HPC. 
+- [X] Load Packages 
+- [X] VCF file 
+- [ ] PGDSpider (or any format conversor)
+- [X] CIPRES account 
 
 __________________________________________________________
 
