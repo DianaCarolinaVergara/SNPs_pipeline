@@ -2,7 +2,7 @@
 
 #### Pipeline
 
-We received a vcf file where SNPsaurus converted genomic DNA into nextRAD genotyping-by-sequencing libraries (SNPsaurus, LLC).
+We received a `vcf file` where SNPsaurus converted genomic DNA into nextRAD genotyping-by-sequencing libraries (SNPsaurus, LLC).
 The nextRAD libraries were sequenced on a HiSeq 4000 on two lanes of 150bp reads.
 
 ![](https://www.rbcbioscienceusa.com/wp-content/uploads/2019/03/SNP-961x480.png)
@@ -14,7 +14,7 @@ With this pipeline you would be able to:
 > genepop, parallel, poppr, dartR, devtools, phytools, seqinr, phylotools, adegenet, pegas, hierfstat
 
 
-   1. Remove indels (insertions-deletions)
+   1. Remove `indels` (insertions-deletions)
 
    2. SNPs upper and lower 20% of depth distribution
 
@@ -24,7 +24,7 @@ With this pipeline you would be able to:
 
       3.2 SNPs (>90%) with high degree of missingness information
 
-   4. Rewrite vcf file
+   4. Rewrite `vcf file`
 
 
 ![](https://d33wubrfki0l68.cloudfront.net/62bcc8535a06077094ca3c29c383e37ad7334311/a263f/assets/img/logo.svg)
@@ -33,7 +33,7 @@ With this pipeline you would be able to:
 
    1. Run Minor Allele Frequency (MAF)
 
-* Convert vcf file to PHYLIP format
+* Convert vcf file to `PHYLIP format`
 
 > Suitable for RAxML
 
