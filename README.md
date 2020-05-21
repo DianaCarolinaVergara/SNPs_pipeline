@@ -37,8 +37,9 @@ With this pipeline you would be able to:
 
 > Suitable for RAxML
 
-![](http://www.phylo.org/img/logo_cipres.gif)
 ![](https://s3.amazonaws.com/user-media.venngage.com/434503-b8f72eedfbceddd1c2371f8f115ce244.png)
+![](http://www.phylo.org/img/logo_cipres.gif)
+
 
 __________________________________________________________
 
