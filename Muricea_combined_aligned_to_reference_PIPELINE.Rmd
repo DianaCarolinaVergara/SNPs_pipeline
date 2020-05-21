@@ -1,0 +1,364 @@
+---
+title: "Muricea_SNPs_reference_aligned"
+author: "Vergara, Diana Carolina"
+date: "17/2/2020"
+output: html_document
+---
+
+
+```{r}
+library(vcfR)
+library(ggplot2)
+library(reshape2)
+```
+
+```{r}
+Muricea.vcf <- read.vcfR("muriceacombinedref.vcf")
+Muricea.vcf
+```
+
+```{r}
+ Muricea.vcf_ID <- addID(Muricea.vcf,"_")
+ Muricea.vcf_ID
+```
+
+
+```{r}
+Muricea.vcf_ID_SNPs <- extract.indels(Muricea.vcf_ID,return.indels = FALSE)
+Muricea.vcf_ID_SNPs  
+Muricea.vcf_ID_Indels <- extract.indels(Muricea.vcf_ID,return.indels = TRUE)
+Muricea.vcf_ID_Indels
+```
+
+```{r}
+Muricea_dp<- extract.gt(Muricea.vcf_ID_SNPs, element = "DP", as.numeric=TRUE)
+```
+
+
+```{r}
+dpf <- melt(Muricea_dp, varnames = c("Index", "Sample"),
+            value.name = "Depth", na.rm = TRUE)
+dpf <- dpf[ dpf$Depth > 0, ]
+p <- ggplot(dpf, aes(x = Sample, y = Depth))
+p <- p + geom_violin(fill = "#C0C0C0", adjust = 1.0,
+                     scale = "count", trim = TRUE)
+p <- p + theme_bw()
+p <- p + theme(axis.title.x = element_blank(),
+               axis.text.x = element_text(angle = 60, hjust = 1))
+p <- p + scale_y_continuous(trans = scales::log2_trans(),
+                            breaks = c(1, 10, 100, 800),
+                            minor_breaks = c(1:10, 2:10 * 10, 2:8 * 100))
+p <- p + theme(panel.grid.major.y = element_line(color = "#A9A9A9", size = 0.6))
+p <- p + theme(panel.grid.minor.y = element_line(color = "#C0C0C0", size = 0.2))
+p <- p + ylab("Depth (DP)")
+p
+```
+
+
+
+```{r}
+
+quants <- apply(Muricea_dp, MARGIN=2, quantile, probs=c(0.1, 0.9), na.rm=TRUE)
+dp2 <- sweep(Muricea_dp, MARGIN = 2, FUN = "-", quants[1, ])
+Muricea_dp[dp2 < 0] <- NA
+dp2 <- sweep(Muricea_dp, MARGIN = 2, FUN = "-", quants[2, ])
+Muricea_dp[dp2 > 0] <- NA
+Muricea_dp[Muricea_dp < 10] <- NA
+# Update the vcfR object with our changes.
+Muricea.vcf_ID_SNPs@gt[, -1][ is.na(Muricea_dp) == TRUE ] <- NA
+Muricea.vcf_ID_SNPs
+
+Muricea.vcf_ID_SNPs_dp<- extract.gt(Muricea.vcf_ID_SNPs, element = "DP", as.numeric=TRUE)
+
+heatmap.bp(Muricea.vcf_ID_SNPs_dp[1:1000,], rlabels=FALSE)
+
+```
+
+
+```{r}
+#Omitting samples
+
+Muricea.vcf_ID_SNPs_miss <- apply(Muricea.vcf_ID_SNPs_dp, MARGIN = 2, function(x){ sum(is.na(x)) })
+Muricea.vcf_ID_SNPs_miss <- Muricea.vcf_ID_SNPs_miss/nrow(Muricea.vcf_ID_SNPs_dp)*100
+
+
+par(mar = c(7,4,4,2))
+barplot(Muricea.vcf_ID_SNPs_miss, las = 2, col = 1:12, axes=TRUE, axisnames = TRUE)
+title("Missingness (%)")
+par(font.axis = 2)
+par(font.lab = 2)
+par(mar = c(5,4,4,2))
+barplot(Muricea.vcf_ID_SNPs_miss, col = 1:100, axes=TRUE, axisnames = TRUE)
+title(main= "Missingness in Muricea", ylab = "Missingness (%)", xlab= "Sample")
+
+Muricea.vcf_ID_SNPs@gt <- Muricea.vcf_ID_SNPs@gt [, c(TRUE, Muricea.vcf_ID_SNPs_miss < 30)]
+
+
+Muricea.vcf_ID_SNPs
+
+ Muricea.vcf_ID_SNPs_dp2<- extract.gt(Muricea.vcf_ID_SNPs, element = "DP", as.numeric=TRUE)
+
+
+heatmap.bp(Muricea.vcf_ID_SNPs_dp2[1:1000,], rlabels = FALSE)
+
+
+```
+
+
+```{r}
+
+#Omitting variants
+
+#Previously we have seen how to quantify and visualize missingness for variants in our dataset.
+#We can use this information to omit variants that have a high degree of missingness similar
+#to how we treated the samples.
+
+Muricea_miss <- apply(Muricea_dp, MARGIN = 1, function(x){ sum( is.na(x) ) } )
+Muricea_miss <- Muricea_miss / ncol(Muricea_dp)*100
+Muricea_DP_filtered <- Muricea.vcf_ID_SNPs[Muricea_miss<90]
+
+Muricea_DP_filtered
+
+Muricea_dp <- extract.gt(Muricea_DP_filtered, element="DP", as.numeric = TRUE)
+heatmap.bp(Muricea_dp, rlabels = FALSE)
+
+```
+
+
+```{r}
+
+Muricea_DP_filtered_dp<- extract.gt(Muricea_DP_filtered, element = "DP", as.numeric=TRUE)
+
+
+heatmap.bp(Muricea_DP_filtered_dp[1:1000,], rlabels = FALSE)
+
+
+Muricea_DP_filtered_miss <- apply(Muricea_DP_filtered_dp, MARGIN = 2, function(x){ sum(is.na(x)) })
+Muricea_DP_filtered_miss <- Muricea_DP_filtered_miss/nrow(Muricea_DP_filtered_dp)*100
+
+
+par(mar = c(7,4,4,2))
+barplot(Muricea_DP_filtered_miss, las = 2, col = 1:12, axes=TRUE, axisnames = TRUE)
+title("Missingness (%)")
+par(font.axis = 2)
+par(font.lab = 2)
+par(mar = c(5,4,4,2))
+barplot(Muricea_DP_filtered_miss, col = 1:100, axes=TRUE, axisnames = TRUE)
+title(main= "Missingness in Muricea", ylab = "Missingness (%)", xlab= "Sample")
+
+```
+```{r}
+#Write new filtered VCFs
+
+write.vcf(Muricea_DP_filtered,file= "Muricea_DP_90Miss_filtered.vcf")
+
+```
+
+
+```{r}
+Muricea_DP_90Miss_filtered.vcf <- read.vcfR("Muricea_DP_90Miss_filtered.vcf")
+Muricea_DP_90Miss_filtered.vcf
+
+dp <- extract.gt(Muricea_DP_90Miss_filtered.vcf,  element = "DP", as.numeric = TRUE)
+class(dp)
+
+
+dpf <- melt(dp, varnames = c("Index", "Sample"),
+            value.name = "Depth", na.rm = TRUE)
+dpf <- dpf[ dpf$Depth > 0, ]
+p <- ggplot(dpf, aes(x = Sample, y = Depth))
+p <- p + geom_violin(fill = "#C0C0C0", adjust = 1.0,
+                     scale = "count", trim = TRUE)
+p <- p + theme_bw()
+p <- p + theme(axis.title.x = element_blank(),
+               axis.text.x = element_text(angle = 60, hjust = 1))
+p <- p + scale_y_continuous(trans = scales::log2_trans(),
+                            breaks = c(1, 10, 100, 800),
+                            minor_breaks = c(1:10, 2:10 * 10, 2:8 * 100))
+p <- p + theme(panel.grid.major.y = element_line(color = "#A9A9A9", size = 0.6))
+p <- p + theme(panel.grid.minor.y = element_line(color = "#C0C0C0", size = 0.2))
+p <- p + ylab("Depth (DP)")
+p
+```
+
+#Filtros de menor frecuencia
+
+
+#Abip_MAF_vcf <-maf(Muricea_DP_90Miss_filtered.vcf)
+#Abip_MAF_vcf[Abip_MAF_vcf[,4]< 0.05]<- NA
+#Abip_MAF_vcf_NA <- is.na(Abip_MAF_vcf[,4])
+#Abip_MAF_vcf_NA_loci<- which(Abip_MAF_vcf_NA, arr.ind = TRUE, useNames = TRUE)
+## removing
+#Abip_toRemoveMAF<- c(Abip_MAF_vcf_NA_loci)
+#length(Abip_toRemoveMAF)
+#Abip_filtered_no_clone_HWE_MAF_vcf_last <- Abip_filtered_no_clone_HWE_vcf_last[-Abip_toRemoveMAF]
+#so far 5348 SNPs
+#write.vcf(Abip_filtered_no_clone_HWE_MAF_vcf_last, "Abip_filtered_no_clone_HWE_MAF_vcf_last.vcf")
+
+```{r}
+Muricea_MAF_vcf <-maf(Muricea_DP_90Miss_filtered.vcf)
+Muricea_MAF_vcf[Muricea_MAF_vcf[,4]< 0.01]<- NA
+Muricea_MAF_vcf_NA <- is.na(Muricea_MAF_vcf[,4])
+Muricea_MAF_vcf_NA_loci<- which(Muricea_MAF_vcf_NA, arr.ind = TRUE, useNames = TRUE)
+
+## removing
+Muricea_toRemoveMAF<- c(Muricea_MAF_vcf_NA_loci)
+length(Muricea_toRemoveMAF)
+Muricea_filtered_no_clone_DP_Miss90_MAF_vcf_last <- Muricea_DP_90Miss_filtered.vcf[-Muricea_toRemoveMAF]
+
+#263 SNPs
+write.vcf(Muricea_filtered_no_clone_DP_Miss90_MAF_vcf_last, "Muricea_DP_90Miss_filtered.vcf")
+Muricea_filtered_no_clone_DP_Miss90_MAF_vcf_last
+```
+
+
+```{r}
+
+genlight_Muricea <- vcfR2genlight(Muricea_filtered_no_clone_DP_Miss90_MAF_vcf_last)
+library(poppr)
+
+Muricea_tree_FINAL <- aboot(genlight_Muricea, tree = "upgma", distance = bitwise.dist, sample = 100, showtree = T, cutoff = 50, quiet = T)
+```
+
+##Convert vcf file to genind and the o distance matrix (Pairwise distances between individuals present in the genind object)
+
+```{r}
+genind_Muricea <- vcfR2genind(Muricea_filtered_no_clone_DP_Miss90_MAF_vcf_last)
+genind_Muricea
+Muricea_distances_FINAL.dist<-diss.dist(genind_Muricea, mat=TRUE, percent = TRUE)
+
+```
+
+##Write distance dataframe as a table
+```{r}
+
+
+write.table(Muricea_distances_FINAL.dist, file="Muricea_distances_FINAL.dist.txt", col.names = TRUE, row.names = TRUE, quote = FALSE)
+```
+
+
+
+```{r}
+
+write.csv(Muricea_distances_FINAL.dist, file="Muricea_distances.dist_FINAL.csv", col.names = TRUE, row.names = TRUE, quote = FALSE)
+```
+
+
+
+################################
+################################
+
+
+
+##No es necesario hacer si corre el script anterior
+##MAF en VCFTools
+
+## Minor allele frequency to filter out phylogentically uninformative sites. Biallelic SNPs.
+```{bash eval = FALSE}
+vcftools --vcf Muricea_DP_90Miss_filtered.vcf --maf 0.01  --min-alleles 2 --max-alleles 2 --recode --recode-INFO-all --out Muricea_DP_90Miss_MAF01_Bialle_filtered 
+
+VCFtools - 0.1.17
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+	--vcf Muricea_DP_70Miss_filtered_copy.vcf
+	--recode-INFO-all
+	--maf 0.01
+	--max-alleles 2
+	--min-alleles 2
+	--out Muricea_DP_70Miss_MAF01_Bialle_filtered
+	--recode
+
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+After filtering, kept 81 out of 81 Individuals
+Outputting VCF file...
+After filtering, kept 32375 out of a possible 33174 Sites
+Run Time = 8.00 seconds
+```
+
+## Keep one SNP every 1000 pb (1kb) to avoid any pattern of Linkage disequilibrium (LD)
+
+##NOT NECESSARY STEP***
+
+```{bash eval=FALSE}
+vcftools --vcf Muricea_DP_70Miss_MAF01_Bialle_filtered.recode.vcf --thin 1000 --recode --recode-INFO-all --out Muricea_DP_70Miss_MAF01_Bialle_LD150_filtered 
+
+
+VCFtools - 0.1.17
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+	--vcf Muricea_DP_70Miss_MAF01_Bialle_filtered.recode.vcf
+	--recode-INFO-all
+	--thin 1000
+	--out Muricea_DP_70Miss_MAF01_Bialle_LD150_filtered
+	--recode
+
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+After filtering, kept 81 out of 81 Individuals
+Outputting VCF file...
+After filtering, kept 1878 out of a possible 32375 Sites
+Run Time = 1.00 seconds
+```
+
+```{r}
+Muricea_filtered_no_clone_DP_Miss90_MAF_vcf_last.vcf <- read.vcfR("Muricea_filtered_no_clone_DP_Miss90_MAF_vcf_last")
+Muricea_filtered_no_clone_DP_Miss90_MAF_vcf_last.vcf
+```
+
+
+```{r}
+
+Muricea_DP_70Miss_MAF01_Bialle_LD150_filtered.vcf_dp<- extract.gt(Muricea_DP_70Miss_MAF01_Bialle_LD150_filtered.vcf, element = "DP", as.numeric=TRUE)
+
+
+heatmap.bp(Muricea_DP_70Miss_MAF01_Bialle_LD150_filtered.vcf_dp[1:1000,], rlabels = FALSE)
+
+
+Muricea_DP_70Miss_MAF01_Bialle_LD150_filtered <- apply(Muricea_DP_70Miss_MAF01_Bialle_LD150_filtered.vcf_dp, MARGIN = 2, function(x){ sum(is.na(x)) })
+Muricea_DP_70Miss_MAF01_Bialle_LD150_filtered <- Muricea_DP_70Miss_MAF01_Bialle_LD150_filtered/nrow(Muricea_DP_filtered_dp)*100
+
+
+par(mar = c(7,4,4,2))
+barplot(Muricea_DP_70Miss_MAF01_Bialle_LD150_filtered, las = 2, col = 1:12, axes=TRUE, axisnames = TRUE)
+title("Missingness (%)")
+par(font.axis = 2)
+par(font.lab = 2)
+par(mar = c(5,4,4,2))
+barplot(Muricea_DP_70Miss_MAF01_Bialle_LD150_filtered, col = 1:100, axes=TRUE, axisnames = TRUE)
+title(main= "Missingness in Muricea", ylab = "Missingness (%)", xlab= "Sample")
+
+```
+
+
+## Convert VCF to phylip  format ( suitable for RAxML) using PGD Spider
+
+
+## Exclude individual from previous VCF file and create a distance matrix 
+
+## List of individuals in current vcf file 
+```{bash eval=FALSE}
+vcf-query -l Muricea_filtered_no_clone_DP_Miss90_MAF_vcf_last
+
+```
+
+##Upload individuals to delete and delete them from the vcf to make a new one
+
+```{bash eval=FALSE}
+vcftools --vcf Muricea_DP_70Miss_MAF01_Bialle_LD150_filtered.recode.vcf --remove Delete_samples_Muricea_Phylo.txt --recode --recode-INFO-all --out Muricea_DP_70Miss_MAF01_Bialle_LD150_filtered_deleted_samples
+```
+
+
+```{r}
+Muricea_SNPs_DP10_Miss10_ind15_MAF01_Bialle.recode.vcf <- read.vcfR("muriceacombinedref_SNPs_dp10_miss10_ind15_biallelic_maf1_norep.recode.vcf")
+Muricea_SNPs_DP10_Miss10_ind15_MAF01_Bialle.recode.vcf
+```
+
+
+
+
+```
