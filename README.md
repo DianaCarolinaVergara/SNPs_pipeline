@@ -1,6 +1,6 @@
-## Phylogeny Construction with SNPs 
+# Phylogeny Construction with SNPs 
 
-### Pipeline
+#### Pipeline
 
 We received a vcf file where SNPsaurus converted genomic DNA into nextRAD genotyping-by-sequencing libraries (SNPsaurus, LLC).
 The nextRAD libraries were sequenced on a HiSeq 4000 on two lanes of 150bp reads.
