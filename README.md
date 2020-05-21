@@ -1,5 +1,10 @@
 # Phylogeny Construction with SNPs 
 
+Better explanaitions in our wiki:
+[Wiki](https://github.com/DianaCarolinaVergara/SNPs_pipeline/wiki)
+
+
+
 #### Pipeline
 
 We received a `vcf file` where SNPsaurus converted genomic DNA into nextRAD genotyping-by-sequencing libraries (SNPsaurus, LLC).
