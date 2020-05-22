@@ -3,6 +3,7 @@
 Better explanaitions in our wiki:
 [Wiki](https://github.com/DianaCarolinaVergara/SNPs_pipeline/wiki)
 
+Or the R Markdown with all the commands >[file](github.com/DianaCarolinaVergara/SNPs_pipeline/blob/master/Muricea_combined_aligned_to_reference_PIPELINE.Rmd)<
 
 
 #### Pipeline
