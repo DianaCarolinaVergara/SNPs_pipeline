@@ -116,38 +116,38 @@ write.csv(Muricea_distances_FINAL.dist, file="Muricea_distances.dist_FINAL.csv",
 
 > To verify quality filters
 
-1. Heatmaps
+  1. Heatmaps
 
-```
-heatmap.bp(Muricea_DP_70Miss_MAF01_Bialle_LD150_filtered.vcf_dp[1:1000,], rlabels = FALSE)
-```
+  ```
+  heatmap.bp(Muricea_DP_70Miss_MAF01_Bialle_LD150_filtered.vcf_dp[1:1000,], rlabels = FALSE)
+  ```
 
-2. Barplots
+  2. Barplots
 
-3. Violinplots
+  3. Violinplots
 
-```{r}
-dp <- extract.gt(Muricea_DP_90Miss_filtered.vcf,  element = "DP", as.numeric = TRUE)
-class(dp)
+  ```{r}
+  dp <- extract.gt(Muricea_DP_90Miss_filtered.vcf,  element = "DP", as.numeric = TRUE)
+  class(dp)
 
 
-dpf <- melt(dp, varnames = c("Index", "Sample"),
-            value.name = "Depth", na.rm = TRUE)
-dpf <- dpf[ dpf$Depth > 0, ]
-p <- ggplot(dpf, aes(x = Sample, y = Depth))
-p <- p + geom_violin(fill = "#C0C0C0", adjust = 1.0,
-                     scale = "count", trim = TRUE)
-p <- p + theme_bw()
-p <- p + theme(axis.title.x = element_blank(),
-               axis.text.x = element_text(angle = 60, hjust = 1))
-p <- p + scale_y_continuous(trans = scales::log2_trans(),
-                            breaks = c(1, 10, 100, 800),
-                            minor_breaks = c(1:10, 2:10 * 10, 2:8 * 100))
-p <- p + theme(panel.grid.major.y = element_line(color = "#A9A9A9", size = 0.6))
-p <- p + theme(panel.grid.minor.y = element_line(color = "#C0C0C0", size = 0.2))
-p <- p + ylab("Depth (DP)")
-p
-```
+  dpf <- melt(dp, varnames = c("Index", "Sample"),
+              value.name = "Depth", na.rm = TRUE)
+  dpf <- dpf[ dpf$Depth > 0, ]
+  p <- ggplot(dpf, aes(x = Sample, y = Depth))
+  p <- p + geom_violin(fill = "#C0C0C0", adjust = 1.0,
+                       scale = "count", trim = TRUE)
+  p <- p + theme_bw()
+  p <- p + theme(axis.title.x = element_blank(),
+                 axis.text.x = element_text(angle = 60, hjust = 1))
+  p <- p + scale_y_continuous(trans = scales::log2_trans(),
+                              breaks = c(1, 10, 100, 800),
+                              minor_breaks = c(1:10, 2:10 * 10, 2:8 * 100))
+  p <- p + theme(panel.grid.major.y = element_line(color = "#A9A9A9", size = 0.6))
+  p <- p + theme(panel.grid.minor.y = element_line(color = "#C0C0C0", size = 0.2))
+  p <- p + ylab("Depth (DP)")
+  p
+  ```
 
 
 * Convert vcf file to `PHYLIP format`
