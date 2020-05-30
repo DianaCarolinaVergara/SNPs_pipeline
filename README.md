@@ -97,6 +97,58 @@ Muricea.vcf_ID_Indels
    length(Muricea_toRemoveMAF)
    Muricea_filtered_no_clone_DP_Miss90_MAF_vcf_last <- Muricea_DP_90Miss_filtered.vcf[-Muricea_toRemoveMAF]
    ```
+* Convert `VCF` file to `genind` and distance matrix
+
+```{r}
+genind_Muricea <- vcfR2genind(Muricea_filtered_no_clone_DP_Miss90_MAF_vcf_last)
+genind_Muricea
+Muricea_distances_FINAL.dist<-diss.dist(genind_Muricea, mat=TRUE, percent = TRUE)
+```
+
+```{r}
+write.table(Muricea_distances_FINAL.dist, file="Muricea_distances_FINAL.dist.txt", col.names = TRUE, row.names = TRUE, quote = FALSE)
+```
+
+```{r}
+write.csv(Muricea_distances_FINAL.dist, file="Muricea_distances.dist_FINAL.csv", col.names = TRUE, row.names = TRUE, quote = FALSE)
+```
+* Generate visualization plots
+
+> To verify quality filters
+
+1. Heatmaps
+
+```
+heatmap.bp(Muricea_DP_70Miss_MAF01_Bialle_LD150_filtered.vcf_dp[1:1000,], rlabels = FALSE)
+```
+
+2. Barplots
+
+3. Violinplots
+
+```{r}
+dp <- extract.gt(Muricea_DP_90Miss_filtered.vcf,  element = "DP", as.numeric = TRUE)
+class(dp)
+
+
+dpf <- melt(dp, varnames = c("Index", "Sample"),
+            value.name = "Depth", na.rm = TRUE)
+dpf <- dpf[ dpf$Depth > 0, ]
+p <- ggplot(dpf, aes(x = Sample, y = Depth))
+p <- p + geom_violin(fill = "#C0C0C0", adjust = 1.0,
+                     scale = "count", trim = TRUE)
+p <- p + theme_bw()
+p <- p + theme(axis.title.x = element_blank(),
+               axis.text.x = element_text(angle = 60, hjust = 1))
+p <- p + scale_y_continuous(trans = scales::log2_trans(),
+                            breaks = c(1, 10, 100, 800),
+                            minor_breaks = c(1:10, 2:10 * 10, 2:8 * 100))
+p <- p + theme(panel.grid.major.y = element_line(color = "#A9A9A9", size = 0.6))
+p <- p + theme(panel.grid.minor.y = element_line(color = "#C0C0C0", size = 0.2))
+p <- p + ylab("Depth (DP)")
+p
+```
+
 
 * Convert vcf file to `PHYLIP format`
 
@@ -110,6 +162,8 @@ Or you can use another tool from CIPRESS Phylogenetic Collection (BEAST2, MRBAYE
 
 ![](https://cyverseuk.org/wp-content/uploads/2016/11/beast2_banner.png) ![](https://cyverseuk.org/wp-content/uploads/2016/11/mrbayes_banner.png)
 
+________________________________________
+
 Need:
 
 - [X] Desktop RStudio or R in a HPC. 
@@ -122,6 +176,9 @@ __________________________________________________________
 
 
 ### References
+
+* [GrunLab](http://grunwaldlab.github.io/Population_Genetics_in_R/qc.html)
+
 
 *	RStudio: A Platform‐Independent IDE for R and Sweave - Racine - 2012 - Journal of Applied Econometrics - Wiley Online Library. https://onlinelibrary.wiley.com/doi/abs/10.1002/jae.1278.
 
