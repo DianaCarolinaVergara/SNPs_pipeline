@@ -23,6 +23,38 @@ With this pipeline you would be able to:
 
 > genepop, parallel, poppr, dartR, devtools, phytools, seqinr, phylotools, adegenet, pegas, hierfstat
 
+```
+library(vcfR)
+library(ggplot2)
+library(reshape2)
+install_github("whitlock/OutFLANK")
+biocLite("qvalue")
+
+library("genepopedit")
+library("devtools")
+library("pcadapt")
+library("qvalue")
+library("OutFLANK")
+library("ggplot2")
+library(genepop)
+library(vcfR)
+library(ade4)
+library(ape)
+library(adegenet)
+library(hierfstat)
+library(poppr)
+library(pegas)
+library(poppr)
+library(dplyr)
+library(treemap)
+library(magrittr)
+library("SNPRelate")
+library(RColorBrewer)
+library("phangorn")
+library("grDevices")
+library("colorspace")
+library(colorRamps)
+```
 
    1. Remove `indels` (insertions-deletions)
 
