@@ -39,41 +39,64 @@ library("ggplot2")
 library(genepop)
 library(vcfR)
 library(ade4)
-library(ape)
-library(adegenet)
-library(hierfstat)
-library(poppr)
-library(pegas)
-library(poppr)
-library(dplyr)
-library(treemap)
-library(magrittr)
-library("SNPRelate")
-library(RColorBrewer)
-library("phangorn")
-library("grDevices")
-library("colorspace")
-library(colorRamps)
+...
+
 ```
 
    1. Remove `indels` (insertions-deletions)
+   
+   ```{r}
+Muricea.vcf_ID_SNPs <- extract.indels(Muricea.vcf_ID,return.indels = FALSE)
+Muricea.vcf_ID_SNPs  
+Muricea.vcf_ID_Indels <- extract.indels(Muricea.vcf_ID,return.indels = TRUE)
+Muricea.vcf_ID_Indels
+```
 
    2. SNPs upper and lower 20% of depth distribution
+   
+   ```{r}
+   Muricea_dp<- extract.gt(Muricea.vcf_ID_SNPs, element = "DP", as.numeric=TRUE)
+   ```
 
    3. Delete: 
 
       3.1 Samples (missingness >70%)
+      
+      ```{r}
+      Muricea.vcf_ID_SNPs_miss <- apply(Muricea.vcf_ID_SNPs_dp, MARGIN = 2, function(x){ sum(is.na(x)) })
+      Muricea.vcf_ID_SNPs_miss <- Muricea.vcf_ID_SNPs_miss/nrow(Muricea.vcf_ID_SNPs_dp)*100
+      ```
 
-      3.2 SNPs (>90%) with high degree of missingness information
+      3.2 SNPs - variants (>90%) with high degree of missingness information
+      
+      ```{r} 
+      Muricea_miss <- apply(Muricea_dp, MARGIN = 1, function(x){ sum( is.na(x) ) } )
+      Muricea_miss <- Muricea_miss / ncol(Muricea_dp)*100
+      Muricea_DP_filtered <- Muricea.vcf_ID_SNPs[Muricea_miss<90]
+      ```
 
    4. Rewrite `vcf file`
-
+   
+   ```{r} 
+   write.vcf(Muricea_DP_filtered,file= "Muricea_DP_90Miss_filtered.vcf")
+   ```
 
 ![](https://d33wubrfki0l68.cloudfront.net/62bcc8535a06077094ca3c29c383e37ad7334311/a263f/assets/img/logo.svg)
 
 * Using **RStudio** or VCFTOOLS 0.1.17
 
    1. Run Minor Allele Frequency (MAF)
+   
+   ```{r} 
+   Muricea_MAF_vcf <-maf(Muricea_DP_90Miss_filtered.vcf)
+   Muricea_MAF_vcf[Muricea_MAF_vcf[,4]< 0.01]<- NA 
+   Muricea_MAF_vcf_NA <- is.na(Muricea_MAF_vcf[,4])
+   Muricea_MAF_vcf_NA_loci<- which(Muricea_MAF_vcf_NA, arr.ind = TRUE, useNames = TRUE)
+   
+   Muricea_toRemoveMAF<- c(Muricea_MAF_vcf_NA_loci)
+   length(Muricea_toRemoveMAF)
+   Muricea_filtered_no_clone_DP_Miss90_MAF_vcf_last <- Muricea_DP_90Miss_filtered.vcf[-Muricea_toRemoveMAF]
+   ```
 
 * Convert vcf file to `PHYLIP format`
 
