@@ -1,0 +1,760 @@
+---
+title: "Muricea_Diana"
+author: "Matias Gomez"
+date: "10/17/2020"
+output: html_document
+---
+
+
+```{r}
+Muricea_DP_90Miss_filtered.vcf <- read.vcfR("Muricea_DP_90Miss_filtered.vcf")
+Muricea_DP_90Miss_filtered.vcf
+```
+
+## Upload data to cluster
+
+```{bash}
+cd /data/pradalab/mgomez/Diana/admixture
+
+ scp -r * matias_gomez@bluewaves.uri.edu:/data/pradalab/mgomez/Diana/admixture 
+ 
+ 
+```
+
+
+## Filter: MAF, HWE, LD, 
+
+## Load VCFtools module
+
+```{bash}
+module load VCFtools/0.1.16-foss-2019a-Perl-5.28.1
+```
+
+## MAF 0.01 --maf <float>
+## Include only sites with a Minor Allele Frequency greater than or equal to the "--maf" value and less than or equal to the "--max-maf" value. One of these options may be used without the other. Allele frequency is defined as the number of times an allele appears over all individuals at that site, divided by the total number of non-missing alleles at that site.
+
+```{bash}
+vcftools --vcf Muricea_DP_90Miss_filtered.vcf  --maf 0.01 --recode --recode-INFO-all --out Muricea_DP_90Miss_MAF1
+
+VCFtools - 0.1.16
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+	--vcf Muricea_DP_90Miss_filtered.vcf
+	--recode-INFO-all
+	--maf 0.01
+	--out Muricea_DP_90Miss_MAF1
+	--recode
+
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+After filtering, kept 98 out of 98 Individuals
+Outputting VCF file...
+After filtering, kept 10673 out of a possible 10673 Sites
+Run Time = 18.00 seconds
+
+```
+
+## HWE filter
+
+## I am going to filter those loci not HWE by species. Probably I would have to do it by species per location but since we have few individuals of each species as a whole, and even fewer by species x location, I am going to do it by species only.
+
+
+## The next filter to apply is HWE. Heng Li also found that HWE is another excellent filter to remove erroneous variant calls. We don’t want to apply it across the board, since population structure will create departures from HWE as well. We need to apply this by population. I’ve included a perl script written by Chris Hollenbeck, one of the PhD student’s in my current lab that will do this for us ()
+
+
+```{bash}
+curl -L -O https://github.com/jpuritz/dDocent/raw/master/scripts/filter_hwe_by_pop.pl
+chmod +x filter_hwe_by_pop.pl
+
+./filter_hwe_by_pop.pl
+```
+
+
+## Make pop file need it by the script 
+
+```{bash}
+nano HWE_species_filter.txt
+
+Muricat_M_muricata_sorted	M.muricata
+V1_M_elongata_sorted	M.elongata
+V2_M_elongata_sorted	M.elongata
+G1_M_elongata_sorted	M.elongata
+G3_M_elongata_sorted	M.elongata
+G4_M_elongata_sorted	M.elongata
+G5_M_elongata_sorted	M.elongata
+G6_M_elongata_sorted	M.elongata
+M102_M_muricata_sorted	M.muricata
+M104_M_muricata_sorted	M.muricata
+M105_M_muricata_sorted	M.muricata
+M108_M_muricata_rep_sorted	M.muricata
+M108_M_muricata_sorted	M.muricata
+M109_M_muricata_sorted	M.muricata
+MLP143_M_fruticosa_sorted	M.fruticosa
+MLP144_M_fruticosa_sorted	M.fruticosa
+MLP146_M_fruticosa_sorted	M.fruticosa
+MLP147_M_fruticosa_sorted	M.fruticosa
+MLP150_M_fruticosa_sorted	M.fruticosa
+MLP154_M_fruticosa_sorted	M.fruticosa
+727_M_pendula_sorted	M.pendula
+731_M_pendula_sorted	M.pendula
+732_M_pendula_sorted	M.pendula
+850_M_pendula_sorted	M.pendula
+852_M_pendula_sorted	M.pendula
+854_M_pendula_sorted	M.pendula
+856_M_pendula_sorted	M.pendula
+857_M_pendula_sorted	M.pendula
+902_M_pendula_sorted	M.pendula
+ECU004_M_plantag_sorted	M.plantag
+ECU005_M_californica_sorted	M.californica
+ECU007_M_purpurea_sorted	M.purpurea
+ECU016_M_purpurea_sorted	M.purpurea
+ECU018_M_purpurea_sorted	M.purpurea
+ECU019_M_austera_sorted	M.austera
+ECU021_M_purpurea_sorted	M.purpurea
+ECU022_M_hebes_sorted	M.hebes
+ECU25_M_fruticosa_sorted	M.fruticosa
+ECU026_M_austera_sorted	M.austera
+ECU030_M_fruticosa_sorted	M.fruticosa
+ECU031_M_fruticosa_sorted	M.fruticosa
+ECU034_M_austera_sorted	M.austera
+ECU035_M_californ_sorted	M.californ
+ECU041_M_squarro_sorted	M.squarro
+ECU044_M_squarro_sorted	M.squarro
+ECU046_M_squarro_sorted	M.squarro
+ECU048_M_squarro_sorted	M.squarro
+ECU049_M_californica_sorted	M.californica
+ECU050_M_californica_sorted	M.californica
+ECU056_M_fruticosa_sorted	M.fruticosa
+ECU065_M_fruticosa_sorted	M.fruticosa
+ECU069_M_plantag_sorted	M.plantag
+ECU070_M_squarro_sorted	M.squarro
+ECU072_M_californica_sorted	M.californica
+ECU073_M_echinata_sorted	M.echinata
+ECU076_Muricea_sp_sorted	Muricea.sp
+ECU077_Muricea_sp_sorted	Muricea.sp
+ECU079_M_echinata_sorted	M.echinata
+ECU080_M_echinata_sorted	M.echinata
+ECU082_Muricea_sp_sorted	Muricea.sp
+ECU083_M_echinata_sorted	M.echinata
+ECU085_M_echinata_sorted	M.echinata
+ECU089_Muricea_sp_sorted	Muricea.sp
+ECU109_M_robusta_sorted	M.robusta
+ECU111_M_californica_sorted	M.californica
+ECU116_M_crassa_sorted	M.crassa
+ECU117_M_crassa_sorted	M.crassa
+ECU118_M_crassa_sorted	M.crassa
+ECU119_M_crassa_sorted	M.crassa
+ECU124_M_hebes_sorted	M.hebes
+SAI1712_M_muricata_sorted	M.muricata
+SAI1727_M_muricata_sorted	M.muricata
+SAI1728_M_muricata_sorted	M.muricata
+SAI1729_M_muricata_sorted	M.muricata
+SAI1831_M_muricata_sorted	M.muricata
+SAI1832_M_muricata_sorted	M.muricata
+SAI1833_M_muricata_sorted	M.muricata
+SAI1835_M_muricata_sorted	M.muricata
+SAI1836_M_muricata_sorted	M.muricata
+G2_M_elongata_sorted	M.elongata
+CA1_M_elongata_sorted	M.elongata
+CA2_M_elongata_sorted	M.elongata
+CA3_M_laxa_sorted	M.laxa
+CA4_M_laxa_sorted	M.laxa
+CA5_M_laxa_sorted	M.laxa
+CA6_M_laxa_sorted	M.laxa
+PAN3_mur_sorted	M.laxa
+PANM7_mur_sorted	M.muricata
+PAN4_mur_sorted	M.laxa
+PANM8_mur_sorted	M.muricata
+PAN5_mur_sorted	M.laxa
+PAN6_mur_sorted	M.laxa
+PAN7_mur_sorted	M.laxa
+CAR330_mur_sorted	M.muricata
+PANM4_mur_sorted	M.muricata
+PANM5_mur_sorted	M.muricata
+CAR332_mur_sorted	M.muricata
+PANM6_mur_sorted	M.muricata
+```
+
+## Now run the script anf filter 1% of loci non in HWE
+
+```{r}
+./filter_hwe_by_pop.pl -v Muricea_DP_90Miss_MAF1.recode.vcf -p HWE_species_filter.txt -o Muricea_DP_90Miss_MAF1_HWE1 -h 0.01
+
+Processing population: M.austera (3 inds)
+Processing population: M.californ (1 inds)
+Processing population: M.californica (5 inds)
+Processing population: M.crassa (4 inds)
+Processing population: M.echinata (5 inds)
+Processing population: M.elongata (10 inds)
+Processing population: M.fruticosa (11 inds)
+Processing population: M.hebes (2 inds)
+Processing population: M.laxa (9 inds)
+Processing population: M.muricata (23 inds)
+Processing population: M.pendula (9 inds)
+Processing population: M.plantag (2 inds)
+Processing population: M.purpurea (4 inds)
+Processing population: M.robusta (1 inds)
+Processing population: M.squarro (5 inds)
+Processing population: Muricea.sp (4 inds)
+Outputting results of HWE test for filtered loci to 'filtered.hwe'
+Kept 10673 of a possible 10673 loci (filtered 0 loci)
+
+```
+
+## Now let`s do the thinning to avoid Linkage disequilibrium (LD)
+## --thin <integer>
+## Thin sites so that no two sites are within the specified distance from one another.
+```{bash}
+vcftools --vcf Muricea_DP_90Miss_MAF1_HWE1.recode.vcf  --thin 1000 --recode --recode-INFO-all --out Muricea_DP_90Miss_MAF1_HWE1_LD1kb
+
+Parameters as interpreted:
+	--vcf Muricea_DP_90Miss_MAF1_HWE1.recode.vcf
+	--recode-INFO-all
+	--thin 1000
+	--out Muricea_DP_90Miss_MAF1_HWE1_LD1kb
+	--recode
+
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+After filtering, kept 98 out of 98 Individuals
+Outputting VCF file...
+After filtering, kept 796 out of a possible 10673 Sites
+Run Time = 15.00 seconds
+```
+
+## Since we lost most og the SNPs I am going to reduce the thinning to 500 
+
+```{bash}
+vcftools --vcf Muricea_DP_90Miss_MAF1_HWE1.recode.vcf  --thin 500 --recode --recode-INFO-all --out Muricea_DP_90Miss_MAF1_HWE1_LD500pb
+
+Parameters as interpreted:
+	--vcf Muricea_DP_90Miss_MAF1_HWE1.recode.vcf
+	--recode-INFO-all
+	--thin 1000
+	--out Muricea_DP_90Miss_MAF1_HWE1_LD1kb
+	--recode
+
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+After filtering, kept 98 out of 98 Individuals
+Outputting VCF file...
+After filtering, kept 796 out of a possible 10673 Sites
+Run Time = 15.00 seconds
+```
+
+## Still lost far too many SNPs
+
+```{bash}
+vcftools --vcf Muricea_DP_90Miss_MAF1_HWE1.recode.vcf  --thin 100 --recode --recode-INFO-all --out Muricea_DP_90Miss_MAF1_HWE1_LD100pb
+
+Parameters as interpreted:
+	--vcf Muricea_DP_90Miss_MAF1_HWE1.recode.vcf
+	--recode-INFO-all
+	--thin 100
+	--out Muricea_DP_90Miss_MAF1_HWE1_LD100pb
+	--recode
+
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+After filtering, kept 98 out of 98 Individuals
+Outputting VCF file...
+After filtering, kept 1163 out of a possible 10673 Sites
+Run Time = 15.00 seconds
+```
+
+## Again, we lost too many loci. I am going to run admixture on the non-thinned file and then we can compared it with the thinned file if necessary.
+
+
+## Admixture
+```{bash}
+
+module load BCFtools/1.9-iccifort-2019.1.144-GCC-8.2.0-2.31.1 
+
+bcftools view -H Muricea_DP_90Miss_MAF1_HWE1.recode.vcf | cut -f 1 | uniq | awk '{print $0"\t"$0}' > Muricea_DP_90Miss_MAF1_HWE1.recode.txt 
+
+
+less Muricea_DP_90Miss_MAF1_HWE1.recode.txt 
+```
+
+## Load VCFtools module
+
+```{bash}
+module load VCFtools/0.1.16-foss-2019a-Perl-5.28.1
+```
+
+
+## if it gives you: Module 'HTSlib/1.9-GCC-8.2.0-2.31.1' conflicts with the currently loaded module(s) 'HTSlib/1.9-iccifort-2019.1.144-GCC-8.2.0-2.31.1', do the following
+
+
+```{bash}
+module unload HTSlib
+
+module load VCFtools/0.1.14-foss-2017a-Perl-5.24.1 
+
+```
+
+
+```{bash}
+vcftools --vcf Muricea_DP_90Miss_MAF1_HWE1.recode.vcf --plink --chrom-map Muricea_DP_90Miss_MAF1_HWE1.recode.txt --out Muricea_DP_90Miss_MAF1_HWE1.recode 
+
+
+Parameters as interpreted:
+	--vcf Muricea_DP_90Miss_MAF1_HWE1.recode.vcf
+	--chrom-map Muricea_DP_90Miss_MAF1_HWE1.recode.txt
+	--out Muricea_DP_90Miss_MAF1_HWE1.recode
+	--plink
+
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+After filtering, kept 98 out of 98 Individuals
+Writing PLINK PED and MAP files ... 
+	Read 760 chromosome mapping file entries.
+	
+	Done.
+After filtering, kept 10673 out of a possible 10673 Sites
+Run Time = 3.00 seconds
+```
+
+
+## You should get these 2 
+
+```{bash}
+Muricea_DP_90Miss_MAF1_HWE1.recode.ped
+Muricea_DP_90Miss_MAF1_HWE1.recode.map
+```
+
+
+## Make a new txt file 4 columns per row: ID, ID, pop, ID
+
+```{bash}
+nano updateID.txt
+
+Muricat_M_muricata_sorted	Muricat_M_muricata_sorted	M.muricata	Muricat_M_muricata_sorted
+V1_M_elongata_sorted	V1_M_elongata_sorted	M.elongata	V1_M_elongata_sorted
+V2_M_elongata_sorted	V2_M_elongata_sorted	M.elongata	V2_M_elongata_sorted
+G1_M_elongata_sorted	G1_M_elongata_sorted	M.elongata	G1_M_elongata_sorted
+G3_M_elongata_sorted	G3_M_elongata_sorted	M.elongata	G3_M_elongata_sorted
+G4_M_elongata_sorted	G4_M_elongata_sorted	M.elongata	G4_M_elongata_sorted
+G5_M_elongata_sorted	G5_M_elongata_sorted	M.elongata	G5_M_elongata_sorted
+G6_M_elongata_sorted	G6_M_elongata_sorted	M.elongata	G6_M_elongata_sorted
+M102_M_muricata_sorted	M102_M_muricata_sorted	M.muricata	M102_M_muricata_sorted
+M104_M_muricata_sorted	M104_M_muricata_sorted	M.muricata	M104_M_muricata_sorted
+M105_M_muricata_sorted	M105_M_muricata_sorted	M.muricata	M105_M_muricata_sorted
+M108_M_muricata_rep_sorted	M108_M_muricata_rep_sorted	M.muricata	M108_M_muricata_rep_sorted
+M108_M_muricata_sorted	M108_M_muricata_sorted	M.muricata	M108_M_muricata_sorted
+M109_M_muricata_sorted	M109_M_muricata_sorted	M.muricata	M109_M_muricata_sorted
+MLP143_M_fruticosa_sorted	MLP143_M_fruticosa_sorted	M.fruticosa	MLP143_M_fruticosa_sorted
+MLP144_M_fruticosa_sorted	MLP144_M_fruticosa_sorted	M.fruticosa	MLP144_M_fruticosa_sorted
+MLP146_M_fruticosa_sorted	MLP146_M_fruticosa_sorted	M.fruticosa	MLP146_M_fruticosa_sorted
+MLP147_M_fruticosa_sorted	MLP147_M_fruticosa_sorted	M.fruticosa	MLP147_M_fruticosa_sorted
+MLP150_M_fruticosa_sorted	MLP150_M_fruticosa_sorted	M.fruticosa	MLP150_M_fruticosa_sorted
+MLP154_M_fruticosa_sorted	MLP154_M_fruticosa_sorted	M.fruticosa	MLP154_M_fruticosa_sorted
+727_M_pendula_sorted	727_M_pendula_sorted	M.pendula	727_M_pendula_sorted
+731_M_pendula_sorted	731_M_pendula_sorted	M.pendula	731_M_pendula_sorted
+732_M_pendula_sorted	732_M_pendula_sorted	M.pendula	732_M_pendula_sorted
+850_M_pendula_sorted	850_M_pendula_sorted	M.pendula	850_M_pendula_sorted
+852_M_pendula_sorted	852_M_pendula_sorted	M.pendula	852_M_pendula_sorted
+854_M_pendula_sorted	854_M_pendula_sorted	M.pendula	854_M_pendula_sorted
+856_M_pendula_sorted	856_M_pendula_sorted	M.pendula	856_M_pendula_sorted
+857_M_pendula_sorted	857_M_pendula_sorted	M.pendula	857_M_pendula_sorted
+902_M_pendula_sorted	902_M_pendula_sorted	M.pendula	902_M_pendula_sorted
+ECU004_M_plantag_sorted	ECU004_M_plantag_sorted	M.plantag	ECU004_M_plantag_sorted
+ECU005_M_californica_sorted	ECU005_M_californica_sorted	M.californica	ECU005_M_californica_sorted
+ECU007_M_purpurea_sorted	ECU007_M_purpurea_sorted	M.purpurea	ECU007_M_purpurea_sorted
+ECU016_M_purpurea_sorted	ECU016_M_purpurea_sorted	M.purpurea	ECU016_M_purpurea_sorted
+ECU018_M_purpurea_sorted	ECU018_M_purpurea_sorted	M.purpurea	ECU018_M_purpurea_sorted
+ECU019_M_austera_sorted	ECU019_M_austera_sorted	M.austera	ECU019_M_austera_sorted
+ECU021_M_purpurea_sorted	ECU021_M_purpurea_sorted	M.purpurea	ECU021_M_purpurea_sorted
+ECU022_M_hebes_sorted	ECU022_M_hebes_sorted	M.hebes	ECU022_M_hebes_sorted
+ECU25_M_fruticosa_sorted	ECU25_M_fruticosa_sorted	M.fruticosa	ECU25_M_fruticosa_sorted
+ECU026_M_austera_sorted	ECU026_M_austera_sorted	M.austera	ECU026_M_austera_sorted
+ECU030_M_fruticosa_sorted	ECU030_M_fruticosa_sorted	M.fruticosa	ECU030_M_fruticosa_sorted
+ECU031_M_fruticosa_sorted	ECU031_M_fruticosa_sorted	M.fruticosa	ECU031_M_fruticosa_sorted
+ECU034_M_austera_sorted	ECU034_M_austera_sorted	M.austera	ECU034_M_austera_sorted
+ECU035_M_californ_sorted	ECU035_M_californ_sorted	M.californ	ECU035_M_californ_sorted
+ECU041_M_squarro_sorted	ECU041_M_squarro_sorted	M.squarro	ECU041_M_squarro_sorted
+ECU044_M_squarro_sorted	ECU044_M_squarro_sorted	M.squarro	ECU044_M_squarro_sorted
+ECU046_M_squarro_sorted	ECU046_M_squarro_sorted	M.squarro	ECU046_M_squarro_sorted
+ECU048_M_squarro_sorted	ECU048_M_squarro_sorted	M.squarro	ECU048_M_squarro_sorted
+ECU049_M_californica_sorted	ECU049_M_californica_sorted	M.californica	ECU049_M_californica_sorted
+ECU050_M_californica_sorted	ECU050_M_californica_sorted	M.californica	ECU050_M_californica_sorted
+ECU056_M_fruticosa_sorted	ECU056_M_fruticosa_sorted	M.fruticosa	ECU056_M_fruticosa_sorted
+ECU065_M_fruticosa_sorted	ECU065_M_fruticosa_sorted	M.fruticosa	ECU065_M_fruticosa_sorted
+ECU069_M_plantag_sorted	ECU069_M_plantag_sorted	M.plantag	ECU069_M_plantag_sorted
+ECU070_M_squarro_sorted	ECU070_M_squarro_sorted	M.squarro	ECU070_M_squarro_sorted
+ECU072_M_californica_sorted	ECU072_M_californica_sorted	M.californica	ECU072_M_californica_sorted
+ECU073_M_echinata_sorted	ECU073_M_echinata_sorted	M.echinata	ECU073_M_echinata_sorted
+ECU076_Muricea_sp_sorted	ECU076_Muricea_sp_sorted	Muricea.sp	ECU076_Muricea_sp_sorted
+ECU077_Muricea_sp_sorted	ECU077_Muricea_sp_sorted	Muricea.sp	ECU077_Muricea_sp_sorted
+ECU079_M_echinata_sorted	ECU079_M_echinata_sorted	M.echinata	ECU079_M_echinata_sorted
+ECU080_M_echinata_sorted	ECU080_M_echinata_sorted	M.echinata	ECU080_M_echinata_sorted
+ECU082_Muricea_sp_sorted	ECU082_Muricea_sp_sorted	Muricea.sp	ECU082_Muricea_sp_sorted
+ECU083_M_echinata_sorted	ECU083_M_echinata_sorted	M.echinata	ECU083_M_echinata_sorted
+ECU085_M_echinata_sorted	ECU085_M_echinata_sorted	M.echinata	ECU085_M_echinata_sorted
+ECU089_Muricea_sp_sorted	ECU089_Muricea_sp_sorted	Muricea.sp	ECU089_Muricea_sp_sorted
+ECU109_M_robusta_sorted	ECU109_M_robusta_sorted	M.robusta	ECU109_M_robusta_sorted
+ECU111_M_californica_sorted	ECU111_M_californica_sorted	M.californica	ECU111_M_californica_sorted
+ECU116_M_crassa_sorted	ECU116_M_crassa_sorted	M.crassa	ECU116_M_crassa_sorted
+ECU117_M_crassa_sorted	ECU117_M_crassa_sorted	M.crassa	ECU117_M_crassa_sorted
+ECU118_M_crassa_sorted	ECU118_M_crassa_sorted	M.crassa	ECU118_M_crassa_sorted
+ECU119_M_crassa_sorted	ECU119_M_crassa_sorted	M.crassa	ECU119_M_crassa_sorted
+ECU124_M_hebes_sorted	ECU124_M_hebes_sorted	M.hebes	ECU124_M_hebes_sorted
+SAI1712_M_muricata_sorted	SAI1712_M_muricata_sorted	M.muricata	SAI1712_M_muricata_sorted
+SAI1727_M_muricata_sorted	SAI1727_M_muricata_sorted	M.muricata	SAI1727_M_muricata_sorted
+SAI1728_M_muricata_sorted	SAI1728_M_muricata_sorted	M.muricata	SAI1728_M_muricata_sorted
+SAI1729_M_muricata_sorted	SAI1729_M_muricata_sorted	M.muricata	SAI1729_M_muricata_sorted
+SAI1831_M_muricata_sorted	SAI1831_M_muricata_sorted	M.muricata	SAI1831_M_muricata_sorted
+SAI1832_M_muricata_sorted	SAI1832_M_muricata_sorted	M.muricata	SAI1832_M_muricata_sorted
+SAI1833_M_muricata_sorted	SAI1833_M_muricata_sorted	M.muricata	SAI1833_M_muricata_sorted
+SAI1835_M_muricata_sorted	SAI1835_M_muricata_sorted	M.muricata	SAI1835_M_muricata_sorted
+SAI1836_M_muricata_sorted	SAI1836_M_muricata_sorted	M.muricata	SAI1836_M_muricata_sorted
+G2_M_elongata_sorted	G2_M_elongata_sorted	M.elongata	G2_M_elongata_sorted
+CA1_M_elongata_sorted	CA1_M_elongata_sorted	M.elongata	CA1_M_elongata_sorted
+CA2_M_elongata_sorted	CA2_M_elongata_sorted	M.elongata	CA2_M_elongata_sorted
+CA3_M_laxa_sorted	CA3_M_laxa_sorted	M.laxa	CA3_M_laxa_sorted
+CA4_M_laxa_sorted	CA4_M_laxa_sorted	M.laxa	CA4_M_laxa_sorted
+CA5_M_laxa_sorted	CA5_M_laxa_sorted	M.laxa	CA5_M_laxa_sorted
+CA6_M_laxa_sorted	CA6_M_laxa_sorted	M.laxa	CA6_M_laxa_sorted
+PAN3_mur_sorted	PAN3_mur_sorted	M.laxa	PAN3_mur_sorted
+PANM7_mur_sorted	PANM7_mur_sorted	M.muricata	PANM7_mur_sorted
+PAN4_mur_sorted	PAN4_mur_sorted	M.laxa	PAN4_mur_sorted
+PANM8_mur_sorted	PANM8_mur_sorted	M.muricata	PANM8_mur_sorted
+PAN5_mur_sorted	PAN5_mur_sorted	M.laxa	PAN5_mur_sorted
+PAN6_mur_sorted	PAN6_mur_sorted	M.laxa	PAN6_mur_sorted
+PAN7_mur_sorted	PAN7_mur_sorted	M.laxa	PAN7_mur_sorted
+CAR330_mur_sorted	CAR330_mur_sorted	M.muricata	CAR330_mur_sorted
+PANM4_mur_sorted	PANM4_mur_sorted	M.muricata	PANM4_mur_sorted
+PANM5_mur_sorted	PANM5_mur_sorted	M.muricata	PANM5_mur_sorted
+CAR332_mur_sorted	CAR332_mur_sorted	M.muricata	CAR332_mur_sorted
+PANM6_mur_sorted	PANM6_mur_sorted	M.muricata	PANM6_mur_sorted
+
+cat updateID.txt
+```
+
+## – Update the IDs using PLINK:
+
+## With –file the input .ped file is specified, with –update-ids the updated ID file, –recode tells PLINK to save the output as .ped file, and –out defines the output prefix.
+
+```{bash}
+
+module load PLINK/1.07-foss-2016b
+
+plink --file Muricea_DP_90Miss_MAF1_HWE1.recode --update-ids updateID.txt --make-bed --out Muricea_DP_90Miss_MAF1_HWE1.recode_newID
+
+```
+
+
+## You should get these for
+
+Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed
+Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bim
+Muricea_DP_90Miss_MAF1_HWE1.recode_newID.fam
+Muricea_DP_90Miss_MAF1_HWE1.recode_newID.log
+Muricea_DP_90Miss_MAF1_HWE1.recode_newID.nosex
+
+
+## Install Admixture
+## https://indo-european.eu/human-ancestry/admixture-ancestry-components-r-statistics-plink-convertf-bed-and-ped-files/ 
+```{bash}
+cp /data/pradalab/mgomez/brevolium/Admixture/admixture_linux-1.3.0.tar.gz .
+tar -zxvf admixture_linux-1.3.0.tar.gz
+
+cd dist/admixture_linux-1.3.0/
+
+
+```
+
+## Copy files to the current directory
+```{bash}
+
+cp ../../Muricea_DP_90Miss_MAF1_HWE1.recode_newID* .
+
+```
+
+
+## Run admixture 
+
+
+## Make a script and submit it
+
+```{bash}
+nano admixt_k40.sh
+
+#!/bin/bash
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=20
+#SBATCH --mail-type=BEGIN  --mail-user=matias_gomez@uri.edu
+#SBATCH --mail-type=END  --mail-user=matias_gomez@uri.edu
+#SBATCH --mail-type=FAIL  --mail-user=matias_gomez@uri.edu
+cd $SLURM_SUBMIT_DIR
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 1
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 2
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 3
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 4
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 5
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 6
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 7
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 8
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 9
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 10
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 11
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 12
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 13
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 14
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 15
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 16
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 17
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 18
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 19
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 20
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 21
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 22
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 23
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 24
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 25
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 26
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 27
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 28
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 29
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 30
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 31
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 32
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 33
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 34
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 35
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 36
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 37
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 38
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 39
+./admixture Muricea_DP_90Miss_MAF1_HWE1.recode_newID.bed --cv=10 40
+
+for K in {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40}; do ./admixture --cv=10 -j20 -B c $K | tee log${K}.out; done
+
+sbatch admixt_k40.sh
+
+```
+
+
+## For some reason the results weren`t written to the log files for each run but the overall results are on the slurm job (slurm-1761482.out), so I am just get the CV errors from the slurm log file.
+gonna copy the CV values of each run to make the below file.
+
+## To identify the best value of k clusters which is the value with lowest cross-validation error, we need to collect the cv errors. 
+## https://speciationgenomics.github.io/ADMIXTURE/
+
+
+ ## grep 'pattern' file
+
+```{bash}
+#awk '/CV/ {print $3,$4}' log*out | cut -c 4,7-20 > admixt_k10_CV.error
+
+grep "CV error" slurm-1769025.out > outadmixt_k40_CV_error.txt
+
+cat  outadmixt_k40_CV_error.txt
+
+CV error (K=1): 0.60591
+CV error (K=2): 0.40622
+CV error (K=3): 0.33047
+CV error (K=4): 0.27045
+CV error (K=5): 0.25370
+CV error (K=6): 0.22566
+CV error (K=7): 0.20148
+CV error (K=8): 0.18271
+CV error (K=9): 0.16986
+CV error (K=10): 0.14554
+CV error (K=11): 0.14957
+CV error (K=12): 0.17220
+CV error (K=13): 0.15456
+CV error (K=14): 0.14816
+CV error (K=15): 0.16394
+CV error (K=16): 0.16113
+CV error (K=17): 0.16556
+CV error (K=18): 0.16017
+CV error (K=19): 0.16425
+CV error (K=20): 0.16382
+CV error (K=21): 0.18794
+CV error (K=22): 0.19121
+CV error (K=23): 0.18688
+CV error (K=24): 0.17214
+CV error (K=25): 0.18195
+CV error (K=26): 0.17474
+CV error (K=27): 0.17825
+CV error (K=28): 0.20398
+CV error (K=29): 0.18714
+CV error (K=30): 0.18914
+CV error (K=31): 0.19099
+CV error (K=32): 0.22066
+CV error (K=33): 0.20616
+CV error (K=34): 0.18777
+CV error (K=35): 0.20694
+CV error (K=36): 0.21148
+CV error (K=37): 0.20776
+CV error (K=38): 0.20137
+CV error (K=39): 0.20325
+CV error (K=40): 0.20516
+
+
+```
+
+## I sorted out the file from lowest to highest CV error
+## ## Take a look at the CV (CROSS VALIDATION) lowest value. The lowest values is the one that best explains our data. In our particular case is k=10 with a CV= 0.14554. However, since we have 16 species, we want a first graph with K=16
+
+K 	CV Error
+(K=10):	0.14554
+(K=14):	0.14816
+(K=11):	0.14957
+(K=13):	0.15456
+(K=18):	0.16017
+(K=16):	0.16113
+(K=20):	0.16382
+(K=15):	0.16394
+(K=19):	0.16425
+(K=17):	0.16556
+(K=9):	0.16986
+(K=24):	0.17214
+(K=12):	0.1722
+(K=26):	0.17474
+(K=27):	0.17825
+(K=25):	0.18195
+(K=8):	0.18271
+(K=23):	0.18688
+(K=29):	0.18714
+(K=34):	0.18777
+(K=21):	0.18794
+(K=30):	0.18914
+(K=31):	0.19099
+(K=22):	0.19121
+(K=38):	0.20137
+(K=7):	0.20148
+(K=39):	0.20325
+(K=28):	0.20398
+(K=40):	0.20516
+(K=33):	0.20616
+(K=35):	0.20694
+(K=37):	0.20776
+(K=36):	0.21148
+(K=32):	0.22066
+(K=6):	0.22566
+(K=5):	0.2537
+(K=4):	0.27045
+(K=3):	0.33047
+(K=2):	0.40622
+(K=1):	0.60591
+
+
+## k=16 is then the value we want to plot, but also plot k=10.14,11,13,18 to see the differences of probabilities of ancestry
+
+
+## Admixture with k=16
+## Download all files from the admixture run to local
+
+```{bash}
+scp -r matias_gomez@bluewaves.uri.edu:/data/pradalab/mgomez/Diana/admixture/dist/admixture_linux-1.3.0 .
+
+```
+
+## Set working directory to ../admixture_linux-1.3.0 to have access to your Q files to be able to make the grapgh
+
+```{r}
+library(RColorBrewer)
+
+tbl_k16 <- read.table("Muricea_DP_90Miss_MAF1_HWE1.recode_newID.16.Q")
+tbl_k16
+
+```
+
+## Make sure to adjust the number of color according to match the number of k
+
+## A solution is to use the function colorRampPalette() which can extend any list of colors:
+
+```{r}
+install.packages("pals")
+library(RColorBrewer)
+library(pals)
+# Define the number of colors you want
+nb.cols <- 16
+mycolors <- colorRampPalette(pal.bands(polychrome))(nb.cols)
+```
+
+
+```{r}
+par(c(1.5, 4, 2.5, 2), cex.lab=0.75,cex.axis=0.6)
+barplot(t(as.matrix(tbl_k16)), col = mycolors, ylab = "Anc. Proportions", border= NA, space=0)
+```
+
+## Make a table with the metadata and the Q values from the admixture table to customize the plot. You have to do this for each k value you want to graph
+
+
+```{r}
+admix_table_k16 <- read.table("SNPs_Muricea_metadata_k16.txt", header = T) 
+admix_table_k16
+```
+
+
+## Plot ordered by species
+```{r}
+ordered = admix_table_k16[order(admix_table_k16$Species),]
+ordered
+
+par(c(1.5, 4, 2.5, 2), cex.lab=0.75,cex.axis=0.6)
+barplot(t(as.matrix(ordered[,5:20])), col = mycolors, ylab = "Anc. Proportions", border= NA, space=0,names.arg = (ordered$SampleID), las =2)
+```
+
+## Plot ordered by site
+
+```{r}
+ordered_site = admix_table_k16[order(admix_table_k16$Site),]
+ordered_site
+
+par(c(1.5, 4, 2.5, 2), cex.lab=0.75,cex.axis=0.6)
+barplot(t(as.matrix(ordered_site[,5:20])), col = mycolors , ylab = "Anc. Proportions", border= NA, space=0,names.arg = (ordered_site$SampleID), las =2)
+```
+
+## K10 
+
+```{r}
+library(RColorBrewer)
+
+tbl_k10 <- read.table("Muricea_DP_90Miss_MAF1_HWE1.recode_newID.10.Q")
+tbl_k10
+
+par(c(1.5, 4, 2.5, 2), cex.lab=0.75,cex.axis=0.6)
+barplot(t(as.matrix(tbl_k10)), col = mycolors, ylab = "Anc. Proportions", border= NA, space=0)
+
+```
+
+
+## Make a table with the metadata and the Q values from the admixture table to customize the plot. You have to do this for each k value you want to graph
+
+
+```{r}
+admix_table_k10 <- read.table("SNPs_Muricea_metadata_k10.txt", header = T) 
+admix_table_k10
+```
+
+
+## Plot ordered by species
+
+```{r}
+ordered = admix_table_k10[order(admix_table_k10$Species),]
+ordered
+
+par(c(1.5, 4, 2.5, 2), cex.lab=0.75,cex.axis=0.6)
+barplot(t(as.matrix(ordered[,5:14])), col = mycolors, ylab = "Anc. Proportions", border= NA, space=0,names.arg = (ordered$SampleID), las =2)
+```
+
+## Plot ordered by site
+
+```{r}
+ordered_site = admix_table_k10[order(admix_table_k10$Site),]
+ordered_site
+
+par(c(1.5, 4, 2.5, 2), cex.lab=0.75,cex.axis=0.6)
+barplot(t(as.matrix(ordered_site[,5:14])), col = mycolors , ylab = "Anc. Proportions", border= NA, space=0,names.arg = (ordered_site$SampleID), las =2)
+```
+
